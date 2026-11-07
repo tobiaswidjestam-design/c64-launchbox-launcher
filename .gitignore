@@ -1,0 +1,8 @@
+# Byggda filer
+*.exe
+bin/
+obj/
+
+# Lokala loggar och konfiguration
+*.log
+c64-launcher.ini
