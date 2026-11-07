@@ -1,0 +1,11 @@
+# Kopiera denna fil till c64-launcher.ini och anpassa sokvagarna.
+# Filen maste ligga i samma mapp som c64-launcher.exe.
+
+# Sokvag till VICE (x64sc.exe)
+Emulator=J:\Emulatorz\Emulators\GTK3VICE-3.10-win64\bin\x64sc.exe
+
+# Argument till VICE. {rom} ersatts med den valda diskettbilden.
+Arguments=-autostart-warp -autostart-handle-tde -autostart "{rom}"
+
+# I vilken ordning filer i den uppackade mappen provas
+PreferExtensions=d64,t64,crt,prg,tap
