@@ -31,6 +31,13 @@ It is **not a plugin**: LaunchBox treats the program as "the emulator" because t
 emulator entry's `ApplicationPath` points at the launcher instead of `x64sc.exe`.
 No zip or ROM files are modified.
 
+## Screenshot
+
+LaunchBox starts the game, the launcher picks the right disk image and VICE boots
+straight into it:
+
+![Last Ninja 3 running in VICE, started from LaunchBox](docs/vice-last-ninja-3.png)
+
 ## Installation
 
 1. Copy the folder to, for example,
