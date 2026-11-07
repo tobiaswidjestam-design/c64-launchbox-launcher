@@ -1,94 +1,84 @@
 # C64 LaunchBox Launcher
 
-Liten Windows-launcher som gör att **LaunchBox kan starta Commodore 64-spel i VICE**
-när spelen ligger som zip-arkiv med flera filer i samma mapp.
+A small Windows launcher that lets **LaunchBox start Commodore 64 games in VICE**
+when each game is a zip archive containing several files in the same folder.
 
-## Problemet
+## The problem
 
-LaunchBox packar upp spelets zip till sin tillfälliga 7-Zip-mapp och skickar *en*
-fil vidare till emulatorn — men väljer inte diskettbilden, utan sista filen i
-arkivet:
+LaunchBox extracts the game's zip into its temporary 7-Zip folder and passes *one*
+file on to the emulator — but it does not pick the disk image, it picks the last
+file in the archive:
 
 ```
 x64sc.exe -autostart "...\7-Zip\Temp\<...>\2\VERSION.NFO"
 ```
 
-VICE skriver då skräptecken i `LOAD"…",8,1` och landar i `READY.` utan att spelet
-startar. Samma sak händer för alla arkiv som är uppbyggda som
+VICE then prints garbage characters in `LOAD"…",8,1` and ends up at `READY.`
+without starting the game. The same thing happens for every archive built as
 `NNNxx.D64` (A–D) + `.T64` + `VERSION.NFO`.
 
-## Vad launchern gör
+## What the launcher does
 
-1. Tar emot sökvägen som LaunchBox skickar.
-2. Letar i samma mapp efter första `.d64`, annars `.t64`, `.crt`, `.prg` eller `.tap`
-   (ordningen går att ändra).
-3. Startar VICE med den valda filen.
-4. Väntar tills VICE stängs, så att LaunchBox inte städar bort temp-mappen i förtid.
-5. Skriver varje steg till `c64-launcher.log`.
+1. Receives the path that LaunchBox passes to it.
+2. Looks in the same folder for the first `.d64`, otherwise `.t64`, `.crt`, `.prg`
+   or `.tap` (the order is configurable).
+3. Starts VICE with the chosen file.
+4. Waits until VICE exits, so that LaunchBox does not clean up the temp folder
+   too early.
+5. Writes every step to `c64-launcher.log`.
 
-Det är **ingen plugin**: LaunchBox behandlar programmet som "emulatorn" eftersom
-emulatorpostens `ApplicationPath` pekar på launchern i stället för på `x64sc.exe`.
-Inga zip- eller ROM-filer ändras.
+It is **not a plugin**: LaunchBox treats the program as "the emulator" because the
+emulator entry's `ApplicationPath` points at the launcher instead of `x64sc.exe`.
+No zip or ROM files are modified.
 
 ## Installation
 
-1. Kopiera mappen till exempelvis
-   `C:\Users\<du>\LaunchBox\ThirdParty\C64Launcher\`.
-2. Kopiera `c64-launcher.ini.example` till `c64-launcher.ini` och ange sökvägen
-   till din `x64sc.exe`.
-3. I LaunchBox: **Tools → Manage → Emulators**, välj din VICE-post och sätt
-   **Application Path** till `...\C64Launcher\c64-launcher.exe`.
-   (Samma sak kan göras genom att redigera `Data\Emulators.xml`.)
-4. Behåll `AutoExtract` påslaget för plattformen — launchern behöver den
-   uppackade mappen.
+1. Copy the folder to, for example,
+   `C:\Users\<you>\LaunchBox\ThirdParty\C64Launcher\`.
+2. Copy `c64-launcher.ini.example` to `c64-launcher.ini` and set the path to your
+   `x64sc.exe`.
+3. In LaunchBox: **Tools → Manage → Emulators**, select your VICE entry and set
+   **Application Path** to `...\C64Launcher\c64-launcher.exe`.
+   (The same change can be made by editing `Data\Emulators.xml`.)
+4. Keep `AutoExtract` enabled for the platform — the launcher needs the extracted
+   folder.
 
-Ta backup på `Emulators.xml` innan du ändrar den. Vill du backa allt räcker det
-att peka `ApplicationPath` tillbaka mot `x64sc.exe`.
+Back up `Emulators.xml` before you change it. To undo everything, point
+`ApplicationPath` back at `x64sc.exe`.
 
-## Inställningsfil
+## Settings file
 
-| Nyckel | Exempel | Betydelse |
+| Key | Example | Meaning |
 |---|---|---|
-| `Emulator` | `J:\...\GTK3VICE-3.10-win64\bin\x64sc.exe` | Sökväg till VICE |
-| `Arguments` | `-autostart-warp -autostart-handle-tde -autostart "{rom}"` | Argument; `{rom}` ersätts med vald fil |
-| `PreferExtensions` | `d64,t64,crt,prg,tap` | Prioritetsordning för filändelser |
+| `Emulator` | `J:\...\GTK3VICE-3.10-win64\bin\x64sc.exe` | Path to VICE |
+| `Arguments` | `-autostart-warp -autostart-handle-tde -autostart "{rom}"` | Arguments; `{rom}` is replaced with the chosen file |
+| `PreferExtensions` | `d64,t64,crt,prg,tap` | Priority order for file extensions |
 
-## Bygga själv
+## Building it yourself
 
-Kräver bara .NET Framework 4 som ingår i Windows:
+Only .NET Framework 4 is required, and it ships with Windows:
 
 ```
 C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe -target:winexe -r:System.Core.dll c64-launcher.cs
 ```
 
-`-target:winexe` gör att det inte blir något konsolfönster när LaunchBox startar
-programmet.
+`-target:winexe` means no console window appears when LaunchBox starts the program.
 
-## Felsökning
+## Troubleshooting
 
-Kör launchern direkt i en kommandoprompt för att se vad den gör:
+Run the launcher directly from a command prompt to see what it does:
 
 ```
-c64-launcher.exe "C:\nagon\mapp\VERSION.NFO"
+c64-launcher.exe "C:\some\folder\VERSION.NFO"
 ```
 
-Resultatet hamnar i `c64-launcher.log` bredvid exe-filen.
+The result ends up in `c64-launcher.log` next to the exe file.
 
-## Testat med
+## Tested with
 
-- LaunchBox (2026-build) på Windows 11
+- LaunchBox (2026 build) on Windows 11
 - VICE 3.10 GTK3 (`x64sc.exe`), Commodore 64 (C64SC)
 
-## English summary
+## License
 
-A small Windows launcher (C#, .NET Framework 4) that lets LaunchBox start
-Commodore 64 games in VICE when each game is a zip containing several files.
-LaunchBox normally hands the last file of the archive (`VERSION.NFO`) to the
-emulator, which makes VICE print garbage and drop to `READY.`. The launcher
-picks the first `.d64` (falling back to `.t64`, `.crt`, `.prg`, `.tap`), starts
-VICE with it and waits until VICE exits. No LaunchBox plugin, no ROMs modified.
-
-## Licens
-
-MIT – se [LICENSE](LICENSE).
-
+MIT – see [LICENSE](LICENSE).
